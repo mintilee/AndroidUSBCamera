@@ -165,14 +165,14 @@ class DemoFragment : CameraFragment(), View.OnClickListener, CaptureMediaView.On
 
     override fun initData() {
         super.initData()
-        EventBus.with<Int>(BusKey.KEY_FRAME_RATE).observe(this, {
+        EventBus.with<Int>(BusKey.KEY_FRAME_RATE).observe(this) {
             mViewBinding.frameRateTv.text = "frame rate:  $it fps"
-        })
+        }
 
-        EventBus.with<Boolean>(BusKey.KEY_RENDER_READY).observe(this, { ready ->
-            if (! ready) return@observe
+        EventBus.with<Boolean>(BusKey.KEY_RENDER_READY).observe(this) { ready ->
+            if (!ready) return@observe
             getDefaultEffect()?.apply {
-                when(getClassifyId()) {
+                when (getClassifyId()) {
                     CameraEffect.CLASSIFY_ID_FILTER -> {
                         // check if need to set anim
                         val animId = MMKVUtils.getInt(KEY_ANIMATION, -99)
@@ -200,6 +200,7 @@ class DemoFragment : CameraFragment(), View.OnClickListener, CaptureMediaView.On
                         }
                         MMKVUtils.set(KEY_FILTER, getId())
                     }
+
                     CameraEffect.CLASSIFY_ID_ANIMATION -> {
                         // check if need to set filter
                         val filterId = MMKVUtils.getInt(KEY_ANIMATION, -99)
@@ -227,10 +228,11 @@ class DemoFragment : CameraFragment(), View.OnClickListener, CaptureMediaView.On
                         }
                         MMKVUtils.set(KEY_ANIMATION, getId())
                     }
+
                     else -> throw IllegalStateException("Unsupported classify")
                 }
             }
-        })
+        }
     }
 
     override fun onCameraState(
@@ -449,7 +451,7 @@ class DemoFragment : CameraFragment(), View.OnClickListener, CaptureMediaView.On
 //            return
 //        }
         clickAnimation(v!!, object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 when (v) {
                     mViewBinding.lensFacingBtn1 -> {
                         getCurrentCamera()?.let { strategy ->
@@ -734,7 +736,7 @@ class DemoFragment : CameraFragment(), View.OnClickListener, CaptureMediaView.On
             )
             translationX.duration = 600
             translationX.addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     super.onAnimationStart(animation)
                     mViewBinding.controlPanelLayout.visibility = View.VISIBLE
                 }
@@ -749,7 +751,7 @@ class DemoFragment : CameraFragment(), View.OnClickListener, CaptureMediaView.On
             )
             translationX.duration = 600
             translationX.addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     mViewBinding.controlPanelLayout.visibility = View.INVISIBLE
                 }
