@@ -194,7 +194,8 @@ public final class USBMonitor {
 			}
 			// start connection check
 			mDeviceCounts = 0;
-			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
+			// mAsyncHandler.postDelayed(mDeviceCheckRunnable, 1000);
+			mAsyncHandler.postDelayed(mDeviceCheckRunnable, 100);
 		}
 	}
 
@@ -581,7 +582,8 @@ public final class USBMonitor {
 					}
 				}
 			}
-			mAsyncHandler.postDelayed(this, 2000);	// confirm every 2 seconds
+			// mAsyncHandler.postDelayed(this, 2000);	// confirm every 2 seconds
+			mAsyncHandler.postDelayed(this, 100);	// confirm every 2 seconds
 		}
 	};
 
