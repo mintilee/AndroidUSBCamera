@@ -173,11 +173,15 @@ public final class USBMonitor {
 			if (DEBUG) XLogWrapper.i(TAG, "register:");
 			final Context context = mWeakContext.get();
 			if (context != null) {
-				if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 34) {
+          mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
+        }
+				else if (Build.VERSION.SDK_INT >= 31) {
 					// avoid acquiring intent data failed in receiver on Android12
 					// when using PendingIntent.FLAG_IMMUTABLE
 					// because it means Intent can't be modified anywhere -- jiangdg/20220929
-					mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION),  PendingIntent.FLAG_IMMUTABLE);
+					int PENDING_FLAG_IMMUTABLE = 1<<25;
+					mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), PENDING_FLAG_IMMUTABLE);
 				} else {
 					mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
 				}
@@ -185,11 +189,12 @@ public final class USBMonitor {
 				// ACTION_USB_DEVICE_ATTACHED never comes on some devices so it should not be added here
 				filter.addAction(ACTION_USB_DEVICE_ATTACHED);
 				filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-				if (Build.VERSION.SDK_INT >= 33) {
-					// 在Android 12及以上版本中注册接收器时使用RECEIVER_NOT_EXPORTED
-					context.registerReceiver(mUsbReceiver, filter, 2);
-				}else{
-				    context.registerReceiver(mUsbReceiver, filter);
+				if (Build.VERSION.SDK_INT >= 34) {
+					// RECEIVER_NOT_EXPORTED is required on Android 14
+					int RECEIVER_NOT_EXPORTED = 4;
+					context.registerReceiver(mUsbReceiver, filter, RECEIVER_NOT_EXPORTED);
+				} else {
+					context.registerReceiver(mUsbReceiver, filter);
 				}
 			}
 			// start connection check
@@ -1285,11 +1290,7 @@ public final class USBMonitor {
 		 * @throws IllegalStateException
 		 */
 		public synchronized UsbInterface getInterface(final int interface_id) throws IllegalStateException {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				return getInterface(interface_id,0);
-			}else {
-				return getInterface(interface_id);
-			}
+			return getInterface(interface_id, 0);
 		}
 
 		/**
