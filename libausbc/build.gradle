@@ -48,7 +48,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.github.chenyeju295'
+                groupId = 'com.github.mintilee'
                 artifactId = 'libausbc'
                 version = rootProject.ext.versionNameString
             }
